@@ -23,12 +23,33 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: env.CLIENT_URL, credentials: true },
+  cors: {
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('CORS not allowed'));
+    },
+    credentials: true,
+  },
 });
 
 // ----- middleware (order matters) -----
 app.use(helmet());
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+const allowedOrigins = [
+  'http://localhost:8081',
+  'http://localhost:3000',
+  'http://localhost:19006',
+  env.CLIENT_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new AppError('CORS not allowed', 403));
+  },
+  credentials: true,
+}));
 
 // Must run BEFORE express.json() — Razorpay HMAC is over the raw bytes.
 // If json() ran first, req.body would be an object and the signature would fail.
@@ -52,7 +73,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Smart Cart API',
     version: '1.0.0',
     docs: '/api/health'
