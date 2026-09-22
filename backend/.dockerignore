@@ -1,0 +1,34 @@
+# Dependencies
+# Avoid copying host-compiled binaries (e.g. macOS/Windows native modules) into Linux Alpine
+node_modules
+
+# Environment & Secrets
+# Prevent baking sensitive credentials, database URIs, and API keys into image layers
+.env
+.env.*
+!.env.example
+
+# Version Control
+# Keep build context lightweight and prevent leaking repository commit history
+.git
+.gitignore
+
+# Logs
+# Prevent transferring local error logs and debug artifacts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Docker Configuration
+# Docker recipes and ignore files are not needed inside the runtime container
+Dockerfile
+.dockerignore
+
+# Documentation & Developer Notes
+# Changes to markdown docs should not invalidate Docker build caches
+README.md
+*.md
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
