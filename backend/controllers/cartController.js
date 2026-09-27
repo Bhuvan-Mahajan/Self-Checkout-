@@ -82,6 +82,7 @@ exports.scanItem = asyncHandler(async (req, res) => {
     cart.items.push({
       productId: product._id,
       productName: product.name,
+      barcode: product.barcode,
       quantity: qty,
       unitPrice: product.price,
       unitWeight: product.weightGrams,

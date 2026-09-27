@@ -48,6 +48,12 @@ const cartItemSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+
+    barcode: {
+      type: String,
+      required: true,
+    },
+
   },
   { _id: true } // each line item gets its own ObjectId (update/remove by item id)
 );

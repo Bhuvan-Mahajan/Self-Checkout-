@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "SmartCart",
+    "slug": "smartcart",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#F9F8F6"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "SmartCart needs camera access to scan product barcodes for instant self-checkout.",
+        "NSBluetoothAlwaysUsageDescription": "SmartCart uses Bluetooth Low Energy to connect to your smart shopping cart and its weight sensors.",
+        "NSBluetoothPeripheralUsageDescription": "SmartCart uses Bluetooth Low Energy to connect to your smart shopping cart."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#F9F8F6",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "CAMERA",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-barcode-scanner",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "SmartCart needs camera access to scan product barcodes for instant self-checkout."
+        }
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": false,
+          "modes": [
+            "peripheral",
+            "central"
+          ],
+          "bluetoothAlwaysPermission": "SmartCart uses Bluetooth to pair with your smart cart."
+        }
+      ]
+    ]
+  }
+}
