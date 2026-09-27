@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ScanScreen from '../screens/ScanScreen';
 import CartScreen from '../screens/CartScreen';
 import PaymentScreen from '../screens/PaymentScreen';
+import SuccessScreen from '../screens/SuccessScreen';
 
 const Auth = createStackNavigator();
 const App = createStackNavigator();
@@ -64,6 +65,11 @@ const AppStack = () => (
       name="Payment"
       component={PaymentScreen}
       options={{ title: 'Checkout' }}
+    />
+    <App.Screen
+      name="Success"
+      component={SuccessScreen}
+      options={{ headerShown: false }}
     />
   </App.Navigator>
 );

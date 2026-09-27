@@ -10,6 +10,7 @@ router.use(restrictTo('admin', 'staff'));
 
 router.get('/alerts', adminController.getAlerts);
 router.patch('/alerts/:id', adminController.resolveAlert);
+router.patch('/alerts/:id/resolve', adminController.resolveAlert);
 router.get('/orders', adminController.getOrders);
 router.get('/stats', adminController.getStats);
 router.get('/products', adminController.getProducts);

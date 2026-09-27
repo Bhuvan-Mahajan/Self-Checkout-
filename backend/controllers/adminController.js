@@ -23,9 +23,14 @@ function parsePageLimit(query) {
 exports.getAlerts = asyncHandler(async (req, res) => {
   const { page, limit, skip } = parsePageLimit(req.query);
 
-  const query = {
-    resolved: req.query.resolved === undefined ? false : req.query.resolved === 'true',
-  };
+  const query = {};
+  if (req.query.resolved === 'true') {
+    query.resolved = true;
+  } else if (req.query.resolved === 'false') {
+    query.resolved = false;
+  } else if (req.query.resolved === undefined) {
+    query.resolved = false;
+  }
 
   if (req.query.severity) {
     query.severity = req.query.severity;

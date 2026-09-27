@@ -12,54 +12,33 @@ import { COLORS, CARD_SHADOW } from '../constants/colors';
 import Header from '../components/Header';
 import useCartStore from '../store/cartStore';
 
-export const PaymentScreen = ({ navigation }) => {
+export const PaymentScreen = ({ navigation, route }) => {
   const [selectedMethod, setSelectedMethod] = useState('upi');
-  const [isPaid, setIsPaid] = useState(false);
   const getTotalPrice = useCartStore((s) => s.getTotalPrice);
-  const clearCart = useCartStore((s) => s.clearCart);
+  const cart = useCartStore((s) => s.cart);
+  const items = useCartStore((s) => s.items);
 
-  const subtotal = getTotalPrice();
-  const grandTotal = subtotal + subtotal * 0.05;
+  const orderFromRoute = route?.params?.order;
+  const subtotal = orderFromRoute?.totalAmount
+    ? Number(orderFromRoute.totalAmount) / 100
+    : getTotalPrice();
+  const grandTotal = subtotal > 0 ? subtotal : 10;
 
   const handlePay = () => {
-    setIsPaid(true);
-    clearCart();
+    const orderData = orderFromRoute || {
+      _id: 'SC-' + Math.floor(10000 + Math.random() * 90000),
+      orderNumber: 'SC-' + Math.floor(10000 + Math.random() * 90000),
+      items: cart?.items?.length ? cart.items : items,
+      totalAmount: grandTotal * 100,
+    };
+
+    navigation.navigate('Success', {
+      order: orderData,
+      exitQrCode:
+        orderData.exitQrCode ||
+        'EXIT-CART-SC-' + Math.floor(100000 + Math.random() * 900000),
+    });
   };
-
-  if (isPaid) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <StatusBar barStyle="dark-content" backgroundColor={COLORS.BG_MAIN} />
-        <View style={styles.receiptContainer}>
-          <View style={styles.receiptCard}>
-            <View style={styles.checkCircle}>
-              <Text style={styles.checkIcon}>✓</Text>
-            </View>
-
-            <Text style={styles.paidTitle}>Payment Successful!</Text>
-            <Text style={styles.paidAmount}>₹{grandTotal.toFixed(2)}</Text>
-            <Text style={styles.orderId}>Order #SC-89218 • Paid via UPI</Text>
-
-            <View style={styles.exitGatePass}>
-              <Text style={styles.gateLabel}>STORE EXIT QR CODE</Text>
-              <View style={styles.qrPlaceholder}>
-                <Text style={styles.qrEmoji}>🏁</Text>
-                <Text style={styles.qrText}>Scan at Exit Gate to Open Turnstile</Text>
-              </View>
-              <Text style={styles.cartUnlocked}>Cart lock released automatically.</Text>
-            </View>
-
-            <TouchableOpacity
-              style={styles.doneBtn}
-              onPress={() => navigation.replace('Home')}
-            >
-              <Text style={styles.doneBtnText}>START NEW SESSION</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
