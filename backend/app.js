@@ -23,11 +23,26 @@ const app = express();
 app.set('trust proxy', 1);
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:8081',
+  'http://localhost:3000',
+  'http://localhost:19006',
+  env.CLIENT_URL,
+].filter(Boolean);
+
+const isOriginAllowed = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (/^http:\/\/localhost:\d+$/.test(origin)) return true;
+  return false;
+};
+
 const io = new Server(server, {
   cors: {
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (isOriginAllowed(origin)) return callback(null, true);
       return callback(new Error('CORS not allowed'));
     },
     credentials: true,
@@ -35,21 +50,24 @@ const io = new Server(server, {
 });
 
 // ----- middleware (order matters) -----
-app.use(helmet());
-const allowedOrigins = [
-  'http://localhost:8081',
-  'http://localhost:3000',
-  'http://localhost:19006',
-  env.CLIENT_URL,
-].filter(Boolean);
-
-app.use(cors({
+// CORS must run BEFORE helmet so preflight responses include the right headers
+const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    if (isOriginAllowed(origin)) return callback(null, true);
     return callback(new AppError('CORS not allowed', 403));
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: false,
 }));
 
 // Must run BEFORE express.json() — Razorpay HMAC is over the raw bytes.
