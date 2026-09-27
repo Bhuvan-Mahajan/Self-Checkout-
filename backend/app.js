@@ -62,8 +62,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
 
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
