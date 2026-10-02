@@ -10,7 +10,7 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { COLORS } from '../constants/colors';
 import useCartStore from '../store/cartStore';
 import api from '../services/api';
@@ -26,7 +26,7 @@ export const ScanScreen = ({ navigation }) => {
   const [error, setError] = useState(null);
 
   // Camera permissions for mobile
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
 
   // Cart store state & actions
   const { cart, setCart } = useCartStore();
@@ -35,16 +35,8 @@ export const ScanScreen = ({ navigation }) => {
 
   // Request camera permissions on mobile mount
   useEffect(() => {
-    if (Platform.OS !== 'web') {
-      (async () => {
-        try {
-          const { status } = await BarCodeScanner.requestPermissionsAsync();
-          setHasPermission(status === 'granted');
-        } catch (err) {
-          console.warn('Error requesting camera permissions:', err);
-          setHasPermission(false);
-        }
-      })();
+    if (Platform.OS !== 'web' && !permission?.granted) {
+      requestPermission();
     }
   }, []);
 
@@ -132,18 +124,21 @@ export const ScanScreen = ({ navigation }) => {
     <SafeAreaView style={styles.outerContainer}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.BG_MAIN} />
 
-      {/* MODE 2 (Mobile): Full screen BarCodeScanner background */}
+      {/* MODE 2 (Mobile): Full screen CameraView background */}
       {Platform.OS !== 'web' && (
         <View style={StyleSheet.absoluteFillObject}>
-          {hasPermission === true ? (
-            <BarCodeScanner
-              onBarCodeScanned={isScanning ? undefined : handleScan}
+          {permission?.granted ? (
+            <CameraView
+              onBarcodeScanned={handleScan}
+              barcodeScannerSettings={{
+                barcodeTypes: ['ean13', 'ean8', 'code128', 'qr'],
+              }}
               style={StyleSheet.absoluteFillObject}
             />
           ) : (
             <View style={styles.permissionFallback}>
               <Text style={styles.permissionText}>
-                {hasPermission === false
+                {permission && !permission.granted
                   ? 'Camera permission denied. Please allow camera access in Settings.'
                   : 'Requesting camera permission...'}
               </Text>
