@@ -7,7 +7,7 @@ export const ProtectedRoute = () => {
   const { token, user } = useAuthStore();
 
   if (!token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return (
