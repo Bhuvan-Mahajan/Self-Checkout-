@@ -4,7 +4,7 @@ import { ToastProvider } from './components/ui/toast';
 import useAuthStore from './store/authStore';
 
 // Pages
-import HomePage from './pages/HomePage';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import AlertsPage from './pages/AlertsPage';
@@ -26,7 +26,7 @@ export function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
 
           {/* Protected Routes inside Sidebar Layout */}
